@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>天气预报</title>
+<link rel="stylesheet" type="text/css"
+	th:href="@{/themes/default/easyui.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/themes/icon.css}">
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/weatherinfo.js}"></script>
+<script type="text/template" id='template'>
+
+	<%for(var i=0;i<forecast.length;i++) {%>
+		<tr>
+			<td><%=forecast[i].date%></td>
+			<td><%=forecast[i].high%></td>
+			<td><%=forecast[i].fengli%></td>
+			<td><%=forecast[i].low%></td>
+			<td><%=forecast[i].fengxiang%></td>
+			<td><%=forecast[i].type%></td>
+		</tr>
+	<% } %>
+</script>
+</head>
+<body>
+	<input id="city" class="easyui-combobox" name="city"
+		style="width: 30%;"
+		data-options="
+					valueField: 'engName',
+					textField: 'cityName',
+					label: '城市:',
+					labelPosition: 'left',
+					url:'weatherforecast/getallcities',
+					onSelect:function(rec){
+						var url = rec.engName;    
+            			$.ajax({
+			url:'http://wthrcdn.etouch.cn/weather_mini?city='+rec.cityName,
+		   //dataType:'json',
+			type:'get',
+			success:function(data){
+				var weatherResults=JSON.parse(data).data;
+				var str='';
+				for(var i=0;i<weatherResults.forecast.length;i++) {
+					str+=weatherResults.forecast[i].date+'&nbsp;'+weatherResults.forecast[i].high+'&nbsp;'+weatherResults.forecast[i].low+'&nbsp;'+weatherResults.forecast[i].fengxiang+'&nbsp;'+weatherResults.forecast[i].type+'<br/>';
+				}
+				$('#weather').empty();
+				$('#weather').append(str);
+			}
+			
+		});}">
+	<div id='weather'></div>
+
+</body>
+</html>
